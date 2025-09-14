@@ -1,12 +1,12 @@
 import "./App.css";
 import Login from "./components/Login";
-import Signup from "./components/Signup";
+import Signin from "./components/Signin";
 
 function App() {
   return (
     <>
-      {/* <Signup /> */}
-      <Login />
+      <Signin />
+      {/* <Login /> */}
     </>
   );
 }
