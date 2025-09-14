@@ -2,8 +2,38 @@ import React, { useState } from "react";
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const [currentStep, setCurrentStep] = useState(1);
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
+  };
+
+  const nextStep = () => {
+    if (currentStep < 4) {
+      setCurrentStep(currentStep + 1);
+    }
+  };
+
+  const prevStep = () => {
+    if (currentStep > 1) {
+      setCurrentStep(currentStep - 1);
+    }
+  };
+
+  const handleInputChange = (field, value) => {
+    setFormData((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
+
+  const handleLogin = () => {
+    // Handle login logic here
+    console.log("Login data:", formData);
   };
   return (
     <>
@@ -59,7 +89,7 @@ const Login = () => {
                 </label>
                 <input
                   type="email"
-                  className="w-full text-sm px-4 py-3 rounded-lg border border-gray-300 focus:outline-none  focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent "
+                  className="w-full text-sm px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
 
@@ -151,6 +181,282 @@ const Login = () => {
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Mobile View - 4 Step Login Flow */}
+      <div className="lg:hidden min-h-screen bg-gradient-to-br from-blue-50 to-purple-50">
+        {/* Step 1: Welcome */}
+        {currentStep === 1 && (
+          <div className="relative min-h-screen bg-red-400 overflow-hidden">
+            {/* White Balloons */}
+            {/* Top Balloon */}
+            <div className="absolute top-8 right-8 w-20 h-20 bg-white rounded-full shadow-lg opacity-90 animate-float">
+              <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-8 border-l-transparent border-r-transparent border-t-white"></div>
+              {/* S-shaped Balloon Tail */}
+              <svg
+                className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 w-4 h-12 opacity-60"
+                viewBox="0 0 4 48"
+              >
+                <path
+                  d="M2 0 Q3 6 2 12 Q1 18 2 24 Q3 30 2 36 Q1 42 2 48"
+                  stroke="white"
+                  strokeWidth="1"
+                  fill="none"
+                />
+              </svg>
+            </div>
+
+            {/* Bottom Balloon */}
+            <div className="absolute bottom-8 left-8 w-16 h-16 bg-white rounded-full shadow-lg opacity-85 animate-float-delayed">
+              <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-3 border-r-3 border-t-6 border-l-transparent border-r-transparent border-t-white"></div>
+              {/* S-shaped Balloon Tail */}
+              <svg
+                className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 w-4 h-10 opacity-60"
+                viewBox="0 0 4 40"
+              >
+                <path
+                  d="M2 0 Q3 5 2 10 Q1 15 2 20 Q3 25 2 30 Q1 35 2 40"
+                  stroke="white"
+                  strokeWidth="1"
+                  fill="none"
+                />
+              </svg>
+            </div>
+
+            {/* Center Content */}
+            <div className="flex flex-col justify-center items-center min-h-screen px-6">
+              <div className="text-center">
+                <h1 className="text-5xl font-bold text-white mb-4 tracking-wide drop-shadow-lg">
+                  PostBlogs
+                </h1>
+                <p className="text-lg text-white opacity-90 mb-8 max-w-sm drop-shadow-md">
+                  Share your thoughts, connect with readers, and build your
+                  community
+                </p>
+
+                <button
+                  onClick={nextStep}
+                  className="bg-white hover:bg-gray-100 text-orange-500 font-medium py-4 px-8 rounded-full transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+                >
+                  Get Started
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Step 2: Email Input */}
+        {currentStep === 2 && (
+          <div className="animate-fadeIn">
+            <div className="text-center mb-8">
+              <h2 className="text-2xl font-bold text-gray-800 mb-2">
+                Enter Your Email
+              </h2>
+              <p className="text-gray-600">We'll use this to sign you in</p>
+            </div>
+
+            <div className="space-y-6">
+              <div>
+                <label
+                  htmlFor="email-mobile"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
+                  Email Address
+                </label>
+                <input
+                  type="email"
+                  id="email-mobile"
+                  value={formData.email}
+                  onChange={(e) => handleInputChange("email", e.target.value)}
+                  className="w-full px-4 py-4 text-lg border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="Enter your email"
+                  autoFocus
+                />
+              </div>
+            </div>
+
+            <div className="flex justify-between mt-8">
+              <button
+                onClick={prevStep}
+                className="px-6 py-3 text-gray-600 hover:text-gray-800 transition-colors duration-200"
+              >
+                ← Back
+              </button>
+              <button
+                onClick={nextStep}
+                disabled={!formData.email}
+                className="px-8 py-3 bg-blue-500 hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-medium rounded-xl transition-colors duration-200"
+              >
+                Continue →
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Step 3: Password Input */}
+        {currentStep === 3 && (
+          <div className="animate-fadeIn">
+            <div className="text-center mb-8">
+              <h2 className="text-2xl font-bold text-gray-800 mb-2">
+                Enter Your Password
+              </h2>
+              <p className="text-gray-600">Keep your account secure</p>
+            </div>
+
+            <div className="space-y-6">
+              <div>
+                <label
+                  htmlFor="password-mobile"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
+                  Password
+                </label>
+                <div className="relative">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    id="password-mobile"
+                    value={formData.password}
+                    onChange={(e) =>
+                      handleInputChange("password", e.target.value)
+                    }
+                    className="w-full px-4 py-4 pr-12 text-lg border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="Enter your password"
+                    autoFocus
+                  />
+                  <button
+                    type="button"
+                    onClick={togglePasswordVisibility}
+                    className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                  >
+                    {showPassword ? (
+                      <svg
+                        className="w-6 h-6"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21"
+                        />
+                      </svg>
+                    ) : (
+                      <svg
+                        className="w-6 h-6"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                        />
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                        />
+                      </svg>
+                    )}
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex justify-between mt-8">
+              <button
+                onClick={prevStep}
+                className="px-6 py-3 text-gray-600 hover:text-gray-800 transition-colors duration-200"
+              >
+                ← Back
+              </button>
+              <button
+                onClick={nextStep}
+                disabled={!formData.password}
+                className="px-8 py-3 bg-blue-500 hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-medium rounded-xl transition-colors duration-200"
+              >
+                Continue →
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Step 4: Login & Options */}
+        {currentStep === 4 && (
+          <div className="animate-fadeIn">
+            <div className="text-center mb-8">
+              <div className="w-16 h-16 bg-green-100 rounded-full mx-auto mb-4 flex items-center justify-center">
+                <svg
+                  className="w-8 h-8 text-green-500"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M5 13l4 4L19 7"
+                  />
+                </svg>
+              </div>
+              <h2 className="text-2xl font-bold text-gray-800 mb-2">
+                Ready to Sign In
+              </h2>
+              <p className="text-gray-600">Review your details and sign in</p>
+            </div>
+
+            <div className="bg-white rounded-xl p-6 mb-6 shadow-sm border">
+              <div className="space-y-3">
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Email:</span>
+                  <span className="font-medium">{formData.email}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Password:</span>
+                  <span className="font-medium">••••••••</span>
+                </div>
+              </div>
+            </div>
+
+            <button
+              onClick={handleLogin}
+              className="w-full bg-green-500 hover:bg-green-600 text-white font-medium py-4 rounded-xl transition-colors duration-200 shadow-lg mb-4"
+            >
+              Sign In
+            </button>
+
+            <div className="text-center space-y-4">
+              <button className="text-blue-500 hover:text-blue-600 text-sm underline">
+                Forgot your password?
+              </button>
+
+              <div className="flex items-center my-6">
+                <div className="flex-1 border-t border-gray-300"></div>
+                <span className="px-4 text-sm text-gray-500">OR</span>
+                <div className="flex-1 border-t border-gray-300"></div>
+              </div>
+
+              <button className="w-full border border-gray-300 hover:bg-gray-50 text-gray-700 font-medium py-4 rounded-xl transition-colors duration-200">
+                Don't have an account? Sign up
+              </button>
+            </div>
+
+            <div className="flex justify-center mt-8">
+              <button
+                onClick={prevStep}
+                className="px-6 py-2 text-gray-500 hover:text-gray-700 text-sm transition-colors duration-200"
+              >
+                ← Back to edit
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </>
   );

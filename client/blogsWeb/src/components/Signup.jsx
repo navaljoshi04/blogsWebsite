@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-const Signin = () => {
+const Signup = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [selectedCountry, setSelectedCountry] = useState("+91");
 
@@ -357,4 +357,4 @@ const Signin = () => {
   );
 };
 
-export default Signin;
+export default Signup;
