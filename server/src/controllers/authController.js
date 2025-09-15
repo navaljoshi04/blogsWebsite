@@ -1,5 +1,6 @@
 import userModel from "../models/userModel.js";
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken'
 
 const signup = async(req,res)=>{
     try{
@@ -30,4 +31,50 @@ const signup = async(req,res)=>{
     }
 }
 
-export default signup
+const login = async(req,res)=>{
+    try{
+     const {email,password} = req.body;
+     if(!email || !password) {
+        return res.status(400).json({message:"All fields are required"});
+     }
+        const user = await userModel.findOne({email})
+        if(!user){
+            return res.status(400).json({message:"Invalid Crediantials "})
+        }
+
+        const isMatch = await bcrypt.compare(password,user.password);
+        if(!isMatch){
+            return res.status(400).json({message:"Invalid Crediantials"})
+        }
+        const token = jwt.sign({_id:user._id,role:user.role},process.env.SECRET_KEY,{expiresIn:"1h"})
+        res.cookie("token",token,{
+            httpOnly:true,
+        })
+        return res.status(200).json({
+          message: "Login Successfull",
+          user: {
+            name: user.userName,
+            email: user.email,
+            role: user.role,
+            token,
+          },
+        });
+    }
+    catch(err){
+        return res.status(400).json({message:"ERROR",error:err.message});
+    }
+}
+
+const logout = async(req,res)=>{
+    try{
+          res.clearCookie("token",{
+            httpOnly:true,
+          });
+          return res.status(200).json({message:"User Logout Successfully"});
+    }
+    catch(err){
+        return res.status(400).json({message:"ERROR",error:err.message});
+    }
+}
+
+export { signup, login, logout };
