@@ -7,7 +7,7 @@ const Login = () => {
     email: "",
     password: "",
   });
-
+  console.log("formData", formData);
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
@@ -29,6 +29,17 @@ const Login = () => {
       ...prev,
       [field]: value,
     }));
+  };
+
+  const isValidEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const isValidPassword = (password) => {
+    // At least 8 characters, one lowercase, one uppercase, one number
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+    return passwordRegex.test(password);
   };
 
   const handleLogin = () => {
@@ -89,8 +100,19 @@ const Login = () => {
                 </label>
                 <input
                   type="email"
-                  className="w-full text-sm px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className={`w-full text-sm px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:border-transparent ${
+                    formData.email && !isValidEmail(formData.email)
+                      ? "border-red-500 focus:ring-red-500"
+                      : "border-gray-300 focus:ring-blue-500"
+                  }`}
+                  value={formData.email}
+                  onChange={(e) => handleInputChange("email", e.target.value)}
                 />
+                {formData.email && !isValidEmail(formData.email) && (
+                  <p className="text-red-500 text-xs mt-1">
+                    Please enter a valid email address
+                  </p>
+                )}
               </div>
 
               <div className="mt-8">
@@ -105,12 +127,20 @@ const Login = () => {
                     type={showPassword ? "text" : "password"}
                     name="password"
                     id="password-desktop"
-                    className="w-full text-sm px-4 py-3 pr-12 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className={`w-full text-sm px-4 py-3 pr-12 rounded-lg border focus:outline-none focus:ring-2 focus:border-transparent ${
+                      formData.password && !isValidPassword(formData.password)
+                        ? "border-red-500 focus:ring-red-500"
+                        : "border-gray-300 focus:ring-blue-500"
+                    }`}
+                    value={formData.password}
+                    onChange={(e) =>
+                      handleInputChange("password", e.target.value)
+                    }
                   />
                   <button
                     type="button"
                     onClick={togglePasswordVisibility}
-                    className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none"
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none z-10"
                   >
                     {showPassword ? (
                       <svg
@@ -149,11 +179,25 @@ const Login = () => {
                     )}
                   </button>
                 </div>
+                {formData.password && !isValidPassword(formData.password) && (
+                  <p className="text-red-500 text-xs mt-1">
+                    Password must be at least 8 characters with uppercase,
+                    lowercase, and number
+                  </p>
+                )}
               </div>
 
-              <button className="bg-green-400 text-white w-full px-2 py-2 mt-8 rounded-md font-light text-[18px] cursor-pointer hover:bg-green-500">
-                {" "}
-                Log in{" "}
+              <button
+                onClick={handleLogin}
+                disabled={
+                  !formData.email ||
+                  !formData.password ||
+                  !isValidEmail(formData.email) ||
+                  !isValidPassword(formData.password)
+                }
+                className="bg-green-400 text-white w-full px-2 py-2 mt-8 rounded-md font-light text-[18px] cursor-pointer hover:bg-green-500 disabled:bg-gray-300 disabled:cursor-not-allowed"
+              >
+                Log in
               </button>
 
               {/* OR divider */}
@@ -226,7 +270,7 @@ const Login = () => {
             {/* Center Content */}
             <div className="flex flex-col justify-center items-center min-h-screen px-6">
               <div className="text-center">
-                <h1 className="text-5xl font-bold text-white mb-4 tracking-wide drop-shadow-lg">
+                <h1 className="text-5xl font-mono text-white mb-4 tracking-wide drop-shadow-lg">
                   PostBlogs
                 </h1>
                 <p className="text-lg text-white opacity-90 mb-8 max-w-sm drop-shadow-md">
@@ -247,47 +291,35 @@ const Login = () => {
 
         {/* Step 2: Email Input */}
         {currentStep === 2 && (
-          <div className="animate-fadeIn">
-            <div className="text-center mb-8">
-              <h2 className="text-2xl font-bold text-gray-800 mb-2">
-                Enter Your Email
-              </h2>
-              <p className="text-gray-600">We'll use this to sign you in</p>
+          <div>
+            <div className="mt-2">
+              <img
+                src="https://imgs.search.brave.com/CWZ2EnqBBSyo7WVogCUyk1LXwiU10t2MfGex1g6ukLM/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9jZG5p/Lmljb25zY291dC5j/b20vaWxsdXN0cmF0/aW9uL3ByZW1pdW0v/dGh1bWIvbGF1bmNo/LW9mLXJvY2tldC13/aXRoLW1hbi1hbmQt/d29tYW4taWxsdXN0/cmF0aW9uLWRvd25s/b2FkLWluLXN2Zy1w/bmctZ2lmLWZpbGUt/Zm9ybWF0cy0tc3Bh/Y2UtZXZlbnQtY291/bnRkb3duLWV4cGxv/cmF0aW9uLXRlYW0t/dHJhdmVsLW9uLWJ1/c2luZXNzLXBlb3Bs/ZS1wYWNrLWlsbHVz/dHJhdGlvbnMtMTA2/MTk4NTkucG5nP2Y9/d2VicA"
+                alt=""
+                srcset=""
+                className="w-80 h-80
+               object-contain"
+              />
             </div>
-
-            <div className="space-y-6">
-              <div>
-                <label
-                  htmlFor="email-mobile"
-                  className="block text-sm font-medium text-gray-700 mb-2"
-                >
-                  Email Address
-                </label>
-                <input
-                  type="email"
-                  id="email-mobile"
-                  value={formData.email}
-                  onChange={(e) => handleInputChange("email", e.target.value)}
-                  className="w-full px-4 py-4 text-lg border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Enter your email"
-                  autoFocus
-                />
-              </div>
+            <div className="mt-18">
+              <h1 className="font-light text-[38px] text-center">
+                Discover the world with us 🐼
+              </h1>
             </div>
-
-            <div className="flex justify-between mt-8">
+            <div className="mt-10 flex justify-between">
               <button
                 onClick={prevStep}
-                className="px-6 py-3 text-gray-600 hover:text-gray-800 transition-colors duration-200"
+                className="px-8 py-3 bg-green-400 hover:bg-green-600 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-medium rounded-xl transition-colors duration-200"
               >
-                ← Back
+                {" "}
+                ＜ Back{" "}
               </button>
               <button
                 onClick={nextStep}
-                disabled={!formData.email}
-                className="px-8 py-3 bg-blue-500 hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-medium rounded-xl transition-colors duration-200"
+                className="px-8 py-3 bg-blue-400 hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-medium rounded-xl transition-colors duration-200"
               >
-                Continue →
+                {" "}
+                ＞ Next{" "}
               </button>
             </div>
           </div>
@@ -296,18 +328,52 @@ const Login = () => {
         {/* Step 3: Password Input */}
         {currentStep === 3 && (
           <div className="animate-fadeIn">
-            <div className="text-center mb-8">
-              <h2 className="text-2xl font-bold text-gray-800 mb-2">
-                Enter Your Password
-              </h2>
-              <p className="text-gray-600">Keep your account secure</p>
+            <div className="overflow-hidden text-center">
+              <img
+                src="https://images.unsplash.com/photo-1551434678-e076c223a692?w=900&auto=format&fit=crop&q=80&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                alt="Welcome back to your account"
+                className="h-80 w-full object-cover"
+              />
+              <div className="px-6 py-8">
+                <h1 className="font-bold text-4xl text-gray-800 mb-3 tracking-tight">
+                  Welcome back
+                </h1>
+                <h4 className="text-lg text-gray-600 font-medium">
+                  Sign in to access your account
+                </h4>
+              </div>
             </div>
 
-            <div className="space-y-6">
+            <div className="space-y-6 mt-4">
+              <div>
+                <label
+                  htmlFor="email-mobile"
+                  className="block text-sm font-medium text-gray-700 mb-2 px-2 py-2 "
+                >
+                  Enter your email
+                </label>
+                <input
+                  type="email"
+                  className={`w-full ml-2 mr-2 px-4 py-4 pr-12 text-lg border rounded-xl focus:outline-none focus:ring-2 focus:border-transparent ${
+                    formData.email && !isValidEmail(formData.email)
+                      ? "border-red-500 focus:ring-red-500"
+                      : "border-gray-300 focus:ring-blue-500"
+                  }`}
+                  placeholder="Enter your email"
+                  value={formData.email}
+                  onChange={(e) => handleInputChange("email", e.target.value)}
+                  autoFocus
+                />
+                {formData.email && !isValidEmail(formData.email) && (
+                  <p className="text-red-500 text-xs mt-1 ml-2">
+                    Please enter a valid email address
+                  </p>
+                )}
+              </div>
               <div>
                 <label
                   htmlFor="password-mobile"
-                  className="block text-sm font-medium text-gray-700 mb-2"
+                  className="block text-sm font-medium text-gray-700 mb-2 px-2 py-2"
                 >
                   Password
                 </label>
@@ -319,10 +385,20 @@ const Login = () => {
                     onChange={(e) =>
                       handleInputChange("password", e.target.value)
                     }
-                    className="w-full px-4 py-4 pr-12 text-lg border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className={`w-full ml-2 mr-2 px-4 py-4 pr-12 text-lg border rounded-xl focus:outline-none focus:ring-2 focus:border-transparent ${
+                      formData.password && !isValidPassword(formData.password)
+                        ? "border-red-500 focus:ring-red-500"
+                        : "border-gray-300 focus:ring-blue-500"
+                    }`}
                     placeholder="Enter your password"
                     autoFocus
                   />
+                  {formData.password && !isValidPassword(formData.password) && (
+                    <p className="text-red-500 text-sm mt-1 ml-2">
+                      Password must be at least 8 characters with uppercase,
+                      lowercase, and number
+                    </p>
+                  )}
                   <button
                     type="button"
                     onClick={togglePasswordVisibility}
@@ -371,16 +447,21 @@ const Login = () => {
             <div className="flex justify-between mt-8">
               <button
                 onClick={prevStep}
-                className="px-6 py-3 text-gray-600 hover:text-gray-800 transition-colors duration-200"
+                className="px-6 py-3 text-gray-600 bg-green-400 rounded-md ml-4 hover:text-gray-800 transition-colors duration-200"
               >
-                ← Back
+                ＜ Back
               </button>
               <button
                 onClick={nextStep}
-                disabled={!formData.password}
+                disabled={
+                  !formData.email ||
+                  !formData.password ||
+                  !isValidEmail(formData.email) ||
+                  !isValidPassword(formData.password)
+                }
                 className="px-8 py-3 bg-blue-500 hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-medium rounded-xl transition-colors duration-200"
               >
-                Continue →
+                ＞ Next
               </button>
             </div>
           </div>
