@@ -59,14 +59,20 @@ const Signup = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const payload = {
+      userName: formData.username,
+      email: formData.email,
+      password: formData.password,
+      phoneNumber: formData.contactNumber,
+    };
     try {
-      console.log(formData);
+      console.log("formData", formData);
       const response = await axios.post(
-        "http://localhost:5000/api/auth/register",
-        formData
+        "http://localhost:3000/api/auth/signup",
+        payload
       );
       console.log(response, "response");
-      dispatch(loginSuccess(formData));
+      dispatch(loginSuccess(response?.data?.user));
 
       navigate("/login");
       setFormData({

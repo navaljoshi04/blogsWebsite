@@ -14,6 +14,7 @@ import {
   faUser,
   faSignOutAlt,
 } from "@fortawesome/free-solid-svg-icons";
+import axios from "axios";
 
 const Header = () => {
   const [isToggle, setIsToggle] = useState(true);
@@ -25,9 +26,15 @@ const Header = () => {
     setIsToggle(!isToggle);
   };
   const dispatch = useDispatch();
-  const handleLogout = () => {
-    console.log(user, "is logged out");
-    dispatch(logoutSuccess());
+
+  const handleLogout = async () => {
+    try {
+      await axios.post("http://localhost:3000/api/auth/logout", user);
+      dispatch(logoutSuccess());
+      console.log(user, "is logged out");
+    } catch (error) {
+      console.log("error while loggin out", error);
+    }
   };
   return (
     <>
