@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-
+import { useNavigate } from "react-router-dom";
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
@@ -7,6 +7,7 @@ const Login = () => {
     email: "",
     password: "",
   });
+  const navigate = useNavigate();
   console.log("formData", formData);
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -44,6 +45,7 @@ const Login = () => {
 
   const handleLogin = () => {
     // Handle login logic here
+    navigate("/home");
     console.log("Login data:", formData);
   };
   return (
@@ -218,7 +220,10 @@ const Login = () => {
             <div className="bg-white shadow-2xl p-8 ml-6 mt-8 rounded-md text-center ">
               <button className="font-light text-[14px]">
                 Don't have an account?{" "}
-                <span className="underline text-gray-600 cursor-pointer hover:text-gray-800">
+                <span
+                  className="underline text-gray-600 cursor-pointer hover:text-gray-800"
+                  onClick={() => navigate("/signup")}
+                >
                   Sign up
                 </span>
               </button>
@@ -509,7 +514,7 @@ const Login = () => {
               onClick={handleLogin}
               className="w-full bg-green-500 hover:bg-green-600 text-white font-medium py-4 rounded-xl transition-colors duration-200 shadow-lg mb-4"
             >
-              Sign In
+              Log In
             </button>
 
             <div className="text-center space-y-4">
@@ -523,7 +528,10 @@ const Login = () => {
                 <div className="flex-1 border-t border-gray-300"></div>
               </div>
 
-              <button className="w-full border border-gray-300 hover:bg-gray-50 text-gray-700 font-medium py-4 rounded-xl transition-colors duration-200">
+              <button
+                onClick={() => navigate("/signup")}
+                className="w-full border border-gray-300 hover:bg-gray-50 text-gray-700 font-medium py-4 rounded-xl transition-colors duration-200"
+              >
                 Don't have an account? Sign up
               </button>
             </div>

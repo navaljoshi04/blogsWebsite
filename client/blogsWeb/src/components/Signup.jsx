@@ -1,9 +1,12 @@
 import React, { useState } from "react";
-
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { loginSuccess } from "../slices/authSlices";
+import axios from "axios";
 const Signup = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [selectedCountry, setSelectedCountry] = useState("+91");
-
+  const dispatch = useDispatch();
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
@@ -24,6 +27,58 @@ const Signup = () => {
   const handleCountryChange = (e) => {
     setSelectedCountry(e.target.value);
   };
+
+  const isValidEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+  const navigate = useNavigate();
+
+  const isNameValid = (name) => {
+    if (name.length === 0) return false;
+    return isNaN(name.charAt(0));
+  };
+
+  const isValidPassword = (pass) => {
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+    return passwordRegex.test(pass);
+  };
+  const [formData, setFormData] = useState({
+    username: "",
+    email: "",
+    password: "",
+    contactNumber: "",
+  });
+
+  const handleChange = (field, value) => {
+    setFormData((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      console.log(formData);
+      const response = await axios.post(
+        "http://localhost:5000/api/auth/register",
+        formData
+      );
+      console.log(response, "response");
+      dispatch(loginSuccess(formData));
+
+      navigate("/login");
+      setFormData({
+        username: "",
+        email: "",
+        password: "",
+        contactNumber: "",
+      });
+    } catch (error) {
+      console.log(error, "error");
+    }
+  };
   return (
     <>
       <div className="min-h-screen bg-gray-50">
@@ -33,36 +88,58 @@ const Signup = () => {
           </h2>
           <h5 className="text-[10px] ml-22 mt-2 font-light">
             Already have an account?{" "}
-            <span className="text-blue-400">Login</span>
+            <span
+              className="text-blue-400 cursor-pointer hover:underline"
+              onClick={() => navigate("/login")}
+            >
+              Login
+            </span>
           </h5>
           <label htmlFor="" className="text-[12px] ml-22 mt-6 font-light">
             User name
           </label>
           <input
             type="text"
-            name=""
-            id=""
+            name="username"
+            id="username-mobile"
+            value={formData.username}
+            onChange={(e) => handleChange("username", e.target.value)}
             className="w-2/4 ml-22 text-[12px] px-3 py-2 rounded-md"
           />
+          {formData.username && !isNameValid(formData.username) && (
+            <p className="text-red-500 text-xs mt-1 ml-22">
+              please enter a valid name.
+            </p>
+          )}
           <label htmlFor="" className="text-[12px] ml-22 mt-6 font-light">
             Email address
           </label>
           <input
             type="email"
-            name=""
-            id=""
+            name="email"
+            id="email-mobile"
+            value={formData.email}
+            onChange={(e) => handleChange("email", e.target.value)}
             className="w-2/4 ml-22 text-[12px] px-3 py-2 rounded-md"
           />
+          {formData.email && !isValidEmail(formData.email) && (
+            <p className="text-red-500 text-xs mt-1 ml-22">
+              please enter a valid email
+            </p>
+          )}
           <label htmlFor="" className="text-[12px] ml-22 mt-6 font-light">
             Password
           </label>
           <div className="relative w-2/4 ml-22">
             <input
               type={showPassword ? "text" : "password"}
-              name=""
-              id=""
+              name="password"
+              id="password-mobile"
+              value={formData.password}
+              onChange={(e) => handleChange("password", e.target.value)}
               className="w-full text-[12px] px-3 py-2 pr-10 rounded-md"
             />
+
             <button
               type="button"
               onClick={togglePasswordVisibility}
@@ -106,6 +183,12 @@ const Signup = () => {
                 </svg>
               )}
             </button>
+            {formData.password && !isValidPassword(formData.password) && (
+              <p className="text-red-500 text-xs mt-1 ml-22">
+                please enter a valid password with one uppercase , a lowercase
+                and a digit ...
+              </p>
+            )}
           </div>
           <span className="text-[8px] font-light ml-22 w-2/4 block">
             use 8 or more character with a mix of symbols , uppercase &
@@ -128,8 +211,10 @@ const Signup = () => {
             </select>
             <input
               type="tel"
-              name=""
-              id=""
+              name="contactNumber"
+              id="contactNumber-mobile"
+              value={formData.contactNumber}
+              onChange={(e) => handleChange("contactNumber", e.target.value)}
               placeholder="Enter phone number"
               className="flex-1 text-[12px] px-3 py-2 rounded-r-md border-l-0 focus:border-l focus:border-gray-400"
             />
@@ -146,12 +231,29 @@ const Signup = () => {
             </span>
           </span>
 
-          <button className="font-medium w-2/4 ml-22 mt-6 h-12 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+          <button
+            onClick={(e) => handleSubmit(e)}
+            disabled={
+              !formData.username ||
+              !formData.contactNumber ||
+              !formData.email ||
+              !formData.password ||
+              !isValidPassword(formData.password) ||
+              !isValidEmail(formData.email) ||
+              !isNameValid(formData.username)
+            }
+            className="font-medium w-2/4 ml-22 mt-6 h-12 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:bg-gray-400 disabled:cursor-not-allowed"
+          >
             Create an account
           </button>
           <span className="ml-22 mt-4 text-[12px] font-light">
             Already have an account?{" "}
-            <span className="text-blue-700 underline">Log In</span>
+            <span
+              className="text-blue-700 underline cursor-pointer hover:no-underline"
+              onClick={() => navigate("/login")}
+            >
+              Log In
+            </span>
           </span>
         </div>
 
@@ -199,7 +301,10 @@ const Signup = () => {
                 </h2>
                 <p className="text-center text-sm text-gray-600 mb-8">
                   Already have an account?{" "}
-                  <span className="text-blue-400 cursor-pointer hover:underline">
+                  <span
+                    className="text-blue-400 cursor-pointer hover:underline"
+                    onClick={() => navigate("/login")}
+                  >
                     Login
                   </span>
                 </p>
@@ -216,8 +321,15 @@ const Signup = () => {
                       type="text"
                       name="username"
                       id="username-desktop"
+                      value={formData.username}
                       className="w-full text-sm px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      onChange={(e) => handleChange("username", e.target.value)}
                     />
+                    {formData.username && !isNameValid(formData.username) && (
+                      <p className="text-red-500 text-xs mt-1">
+                        please enter a valid name.
+                      </p>
+                    )}
                   </div>
 
                   <div>
@@ -231,8 +343,15 @@ const Signup = () => {
                       type="email"
                       name="email"
                       id="email-desktop"
+                      value={formData.email}
+                      onChange={(e) => handleChange("email", e.target.value)}
                       className="w-full text-sm px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     />
+                    {formData.email && !isValidEmail(formData.email) && (
+                      <p className="text-red-500 text-xs mt-1">
+                        please enter a valid email
+                      </p>
+                    )}
                   </div>
 
                   <div>
@@ -247,6 +366,10 @@ const Signup = () => {
                         type={showPassword ? "text" : "password"}
                         name="password"
                         id="password-desktop"
+                        value={formData.password}
+                        onChange={(e) =>
+                          handleChange("password", e.target.value)
+                        }
                         className="w-full text-sm px-4 py-3 pr-12 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       />
                       <button
@@ -295,6 +418,13 @@ const Signup = () => {
                       use 8 or more character with a mix of symbols, uppercase &
                       lowercase
                     </span>
+                    {formData.password &&
+                      !isValidPassword(formData.password) && (
+                        <p className="text-red-500 text-xs mt-1">
+                          Password must be at least 8 characters with uppercase,
+                          lowercase, and number
+                        </p>
+                      )}
                   </div>
 
                   <div>
@@ -317,9 +447,13 @@ const Signup = () => {
                         ))}
                       </select>
                       <input
-                        type="tel"
+                        type="number"
                         name="phone"
                         id="phone-desktop"
+                        value={formData.contactNumber}
+                        onChange={(e) =>
+                          handleChange("contactNumber", e.target.value)
+                        }
                         placeholder="Enter phone number"
                         className="flex-1 text-sm px-4 py-3 rounded-r-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       />
@@ -338,13 +472,28 @@ const Signup = () => {
                   </span>
                 </span>
 
-                <button className="font-medium w-full mt-6 h-12 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                <button
+                  onClick={(e) => handleSubmit(e)}
+                  disabled={
+                    !formData.username ||
+                    !formData.contactNumber ||
+                    !formData.email ||
+                    !formData.password ||
+                    !isValidPassword(formData.password) ||
+                    !isValidEmail(formData.email) ||
+                    !isNameValid(formData.username)
+                  }
+                  className="font-medium w-full mt-6 h-12 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer focus:ring-offset-2 disabled:bg-gray-400 disabled:cursor-not-allowed"
+                >
                   Create an account
                 </button>
 
                 <span className="text-center block mt-4 text-sm font-light">
                   Already have an account?{" "}
-                  <span className="text-blue-700 underline cursor-pointer hover:no-underline">
+                  <span
+                    className="text-blue-700 underline hover:no-underline cursor-pointer"
+                    onClick={() => navigate("/login")}
+                  >
                     Log In
                   </span>
                 </span>
