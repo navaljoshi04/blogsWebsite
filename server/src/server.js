@@ -5,6 +5,7 @@ import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import authRoute from "./routes/userRoute.js";
 import connectDB from "./config/database.js";
+import blogRoute from "./routes/blogRoute.js";
 
 dotenv.config();
 const app = express();
@@ -17,7 +18,11 @@ app.use(
   })
 );
 
+
 app.use("/api/auth", authRoute);
+app.use("/api/blog", blogRoute);
+
+
 
 const PORT = process.env.PORT;
 
