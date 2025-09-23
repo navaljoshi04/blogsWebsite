@@ -3,22 +3,38 @@ import blogModel from "../models/blogModel.js";
 const create = async(req,res)=>{
     try{
           const {heading,subheading,content} = req.body;
-        const imagePath = req.file?.path ?? null;
+       
           if(!heading || !subheading || !content) {
             return res.status(400).json({message:"All fields are required"})
           }
+            const filePaths = req.files?.map((file) => file.path) ?? [];
+
+            // if (filePaths.length === 0) {
+            //   return res
+            //     .status(400)
+            //     .json({ message: "At least one file is required" });
+            // }
 
           const data = await blogModel.create({
-            heading,subheading,content,image:imagePath,user:req.user._id,
-          })
+            heading,
+            subheading,
+            content,
+            file: filePaths,
+            user: req.user._id,
+          });
 
-          return res.status(200).json({message:"Blog Created Successfully",blog:{
-            heading:data.heading,
-            subheading:data.subheading,
-            content:data.content,
-            image:data.image,
-            user:data.user,
-          }})
+             const blogUser = await data.populate("user", "userName");
+
+          return res.status(200).json({
+            message: "Blog Created Successfully",
+            blog: {
+              heading: data.heading,
+              subheading: data.subheading,
+              content: data.content,
+              file: data.file,
+              user: blogUser.user.userName,
+            },
+          });
                   
     }
     catch(err){

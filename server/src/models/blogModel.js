@@ -16,12 +16,13 @@ const blogSchema = mongoose.Schema(
       type: String,
       trim: true,
       required: true,
+      minlength:5,
+      
     },
-    images:[ 
-        {
-      type: String,
-    }
-],
+    file:{
+        type:[String],
+        required:false, 
+    },
     user:{
         type:mongoose.Schema.Types.ObjectId,
         ref:"User",
