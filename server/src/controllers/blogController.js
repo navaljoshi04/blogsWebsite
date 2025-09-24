@@ -1,5 +1,6 @@
 import blogModel from "../models/blogModel.js";
 
+
 const create = async(req,res)=>{
     try{
           const {heading,subheading,content} = req.body;
@@ -42,4 +43,17 @@ const create = async(req,res)=>{
     }
 }
 
-export default create
+const deleteBlog = async(req,res)=>{
+ try{
+      const userId = req.user._id;
+      const {Id} = req.params;
+
+      const blogDelete = await blogModel.findOneAndDelete({_id:Id , user:userId})
+      return res.status(200).json({message:"Blog Deleted Successfully"});
+ }
+ catch(err){
+    return res.status(400).json({message:"ERROR",error:err.message});
+ }
+}
+
+export { create, deleteBlog };
