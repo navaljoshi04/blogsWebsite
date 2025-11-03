@@ -69,7 +69,8 @@ const Signup = () => {
       console.log("formData", formData);
       const response = await axios.post(
         "http://localhost:3000/api/auth/signup",
-        payload
+        payload,
+        { withCredentials: true }
       );
       console.log(response, "response");
       dispatch(loginSuccess(response?.data?.user));

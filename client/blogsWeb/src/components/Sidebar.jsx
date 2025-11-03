@@ -10,8 +10,10 @@ import {
   faPen,
   faGear,
 } from "@fortawesome/free-solid-svg-icons";
+import { useNavigate } from "react-router-dom";
 
 const Sidebar = () => {
+  const navigate = useNavigate();
   return (
     <>
       <div className="hidden lg:block ">
@@ -50,7 +52,10 @@ const Sidebar = () => {
           </div>
 
           <div className="space-y-2 mt-4">
-            <button className="w-44 bg-gray-50 hover:bg-blue-50 hover:border-blue-200 border border-transparent rounded-lg p-3 flex items-center space-x-3 transition-all duration-300 group">
+            <button
+              onClick={() => navigate("/post")}
+              className="w-44 bg-gray-50 hover:bg-blue-50 hover:border-blue-200 border border-transparent rounded-lg p-3 flex items-center space-x-3 transition-all duration-300 group"
+            >
               <div className="w-8 h-8 bg-blue-100 group-hover:bg-blue-200 rounded-lg flex items-center justify-center transition-colors duration-300">
                 <FontAwesomeIcon
                   icon={faTruckFast}
