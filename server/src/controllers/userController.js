@@ -46,6 +46,7 @@ const login = async(req,res)=>{
         if(!isMatch){
             return res.status(400).json({message:"Invalid Crediantials"})
         }
+        
         const token = jwt.sign({_id:user._id,role:user.role},process.env.SECRET_KEY,{expiresIn:"1h"})
         res.cookie("token",token,{
             httpOnly:true,
